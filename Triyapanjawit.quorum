@@ -1,0 +1,193 @@
+// Chairacht Triyapanjawit
+
+use Libraries.Containers.Array
+use Libraries.Compute.Random
+use Libraries.Compute.Math
+
+action Main
+    // prompt user to input numbers of element
+    text amount = input("enter amount of elements there will be in an array between 10 to 1000000")
+    // cast
+    integer amountNum = cast(integer, amount)
+    // make sure the user input 10 to 1000000
+    repeat while amountNum < 10 or amountNum > 1000000
+        amount = input("enter amount of elements there will be in an array between 10 to 1000000")
+        amountNum = cast(integer, amount)
+    end
+    // call action GetData() and assign return value to myArray
+    Array<integer> myArray = GetData(amountNum)
+    // call DisplayNums action
+    DisplayNums(myArray)
+    // get size of myArray and assign to variable size as an integer
+    integer size = myArray:GetSize()
+    integer lo = 0
+    integer hi = size-1
+    // call action QuickSort
+    QuickSort(myArray, lo, hi)
+    // call Average() and assign returned value to the variable average
+    integer average = Average(myArray, size)
+    // call Variance() and assign returned value to the variable variance
+    integer variance = Variance(myArray, average, size)
+    // call Standard_Deviation() and assign returned value to the variable standard_deviaition
+    integer standard_deviation = Standard_Deviation(variance)
+    // call Display_Data
+    Display_Data(myArray, average, variance, standard_deviation)
+end
+
+// this action generate random numbers to the array
+action GetData(integer a) returns Libraries.Containers.Array<integer>
+    Array<integer> myArray
+    Random random               // use random
+    integer amountNum = a       // number of elements
+    myArray:SetSize(amountNum)  // set size of the array using amountNum
+    integer counter = 0
+    
+    repeat amountNum times
+        // repeatedly generate random numbers to an array
+        myArray:Set(counter, random:RandomIntegerBetween(0, 10000))
+        counter = counter + 1
+    end
+    
+    return myArray
+end
+
+// this action display elements of the array
+action DisplayNums(Array<integer> a)
+    Array<integer> myArray = a
+    integer counter = 0         // counter
+    integer size = myArray:GetSize()    // get size of the array
+    integer rem = size mod 10           // do modulus
+    
+    repeat while counter < (size - rem)     // keep looping and display number
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " 
+            + myArray:Get(counter+2) + " " + myArray:Get(counter+3) + " " + 
+            myArray:Get(counter+4) + " " + myArray:Get(counter+5) + " " + 
+            myArray:Get(counter+6) + " " + myArray:Get(counter+7) + " " +
+            myArray:Get(counter+8) + " " + myArray:Get(counter+9)
+        counter = counter + 10
+    end
+
+    // if the size of the array isn't divisible by 10, these will display the last line
+    if rem = 1
+        output myArray:Get(counter)
+    elseif rem = 2
+        output myArray:Get(counter) + " " + myArray:Get(counter+1)
+    elseif rem = 3
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) 
+    elseif rem = 4
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3)
+    elseif rem = 5
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3) + " " + 
+            myArray:Get(counter+4)
+    elseif rem = 6
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3)
+            + " " + myArray:Get(counter+4) + " " + myArray:Get(counter+5)
+    elseif rem = 7 
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3)
+            + " " + myArray:Get(counter+4) + " " + myArray:Get(counter+5) + " " + 
+            myArray:Get(counter+6)
+    elseif rem = 8 
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3) + " " + 
+            myArray:Get(counter+4) + " " + myArray:Get(counter+5) + " " + 
+            myArray:Get(counter+6) + " " + myArray:Get(counter+7)
+    elseif rem = 9
+        output myArray:Get(counter) + " " + myArray:Get(counter+1) + " " + 
+            myArray:Get(counter+2) + " " + myArray:Get(counter+3)
+            + " " + myArray:Get(counter+4) + " " + myArray:Get(counter+5) + " " 
+            + myArray:Get(counter+6) + " " + myArray:Get(counter+7) + " " + 
+            myArray:Get(counter+8)
+    end
+end
+
+// this function performs quick sort
+action QuickSort(Array<integer> a, integer lo, integer hi)
+    Array<integer> myArray = a
+    integer i = lo          // lower
+    integer j = hi          // higher
+    integer tmp = 0         // temporary to swap
+    integer pivot = myArray:Get((lo+hi)/2)
+  
+    // comparing with pivot
+    repeat while i <= j
+        repeat while myArray:Get(i) < pivot
+            i = i + 1
+        end
+        repeat while myArray:Get(j) > pivot
+            j = j - 1
+        end
+        if i <= j
+            tmp = myArray:Get(i)
+            myArray:Set(i, myArray:Get(j))
+            myArray:Set(j, tmp)
+            i = i + 1
+            j = j - 1
+        end
+    end
+
+    // recursion
+    if lo < j
+        QuickSort(myArray, lo, j)
+    end
+    if i < hi
+        QuickSort(myArray, i, hi)
+    end
+end
+
+// this action calculate average value
+action Average(Array<integer> a, integer b) returns integer
+    integer size = b
+    Array<integer> myArray = a
+    integer sum = 0         // sum value
+    integer result = 0      // final result
+    integer counter = 0
+    
+    repeat size times       // keep adding number to sum
+        sum = sum + myArray:Get(counter)
+        counter = counter + 1
+    end
+    result = sum/size       // sum divided by size assigned to result variable
+    return result           // returns result
+end
+
+// this action calculate variance
+action Variance(Array<integer> a, integer b, integer c) returns integer
+    integer size = c        // size of an array
+    integer mean = b        // mean value
+    Array<integer> myArray = a
+    integer counter = 0
+    integer preVar = 0      // result before final calculation for variance
+    
+    repeat while counter < size
+        preVar = preVar + ((myArray:Get(counter)-mean) * (myArray:Get(counter)-mean))
+        counter = counter + 1
+    end
+    
+    return preVar / (size-1)
+end
+
+// this action calculate standard deviation
+action Standard_Deviation(integer a) returns integer
+    Math math       // use math
+    number result = math:SquareRoot(a)      // use square root
+    integer intresult = 0
+    intresult = cast(integer, result)       // cast
+    return intresult                        // returns standard deviation
+end
+
+// this action displays data such as sorted array, average, variance, and standard deviation
+action Display_Data(Array<integer> a , integer b, integer c, integer d)
+    output "sorted array"
+    DisplayNums(a)
+    integer average = b
+    integer variance = c
+    integer standard_deviation = d
+    output "average = " + average
+    output "variance = " + variance
+    output "standard deviation = " + standard_deviation
+end
